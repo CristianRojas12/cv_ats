@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creador de CV - HarvCV Clone Exacto</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <header class="sidebar-header">
+                <div class="header-top">
+                    <h2>Detalles del Currículum</h2>
+                    <div class="header-actions">
+                        <button class="btn-outline-small">Guardar</button>
+                        <button class="btn-primary-small" onclick="descargarPDF()">Descargar PDF</button>
+                    </div>
+                </div>
+
+            <nav class="tabs">
+                <button class="tab active" onclick="cambiarPestana(0)">Personal</button>
+                <button class="tab" onclick="cambiarPestana(1)">Educación</button>
+                <button class="tab" onclick="cambiarPestana(2)">Experiencia</button>
+                <button class="tab" onclick="cambiarPestana(3)">Habilidades</button>
+            </nav>
+
+            <div id="formularios-container">
+                <section class="form-section active-section" data-index="0">
+                    <div class="foto-control">
+                        <label class="label-block">Foto</label>
+                        <div class="foto-wrapper">
+                            <div class="foto-placeholder" id="foto-circle">
+                                <span id="foto-texto">Sin foto</span>
+                                <img id="mini-foto" src="" style="display:none;">
+                            </div>
+                            <label for="foto-upload" class="btn-outline upload-btn">↑ Cargar</label>
+                            <input type="file" id="foto-upload" accept="image/*" hidden onchange="cargarFoto(event)">
+                        </div>
+                    </div>
+                    <div class="input-row-2">
+                        <div class="input-group">
+                            <label>Nombre Completo</label>
+                            <input type="text" id="in-nombre" placeholder="Cristian Rojas" oninput="renderizarCV()">
+                        </div>
+                        <div class="input-group">
+                            <label>Título Profesional</label>
+                            <input type="text" id="in-titulo" placeholder="Data Engineer" oninput="renderizarCV()">
+                        </div>
+                    </div>
+                    <div class="input-row-2">
+                        <div class="input-group">
+                            <label>Correo Electrónico</label>
+                            <input type="email" id="in-correo" placeholder="mail@gmail.com" oninput="renderizarCV()">
+                        </div>
+                        <div class="input-group">
+                            <label>Teléfono</label>
+                            <input type="text" id="in-telefono" placeholder="+54 9 11 3333-4444" oninput="renderizarCV()">
+                        </div>
+                    </div>
+                    <div class="input-row-2">
+                        <div class="input-group">
+                            <label>Ubicación</label>
+                            <input type="text" id="in-ubicacion" placeholder="Buenos Aires, Argentina" oninput="renderizarCV()">
+                        </div>
+                        <div class="input-group">
+                            <label>Sitio Web / LinkedIn</label>
+                            <input type="text" id="in-linkedin" placeholder="linkedin.com/in/cristianfernandorojas/" oninput="renderizarCV()">
+                        </div>
+                    </div>
+                    <div class="input-row-2">
+                        <div class="input-group">
+                            <label>GitHub</label>
+                            <input type="text" id="in-github" placeholder="github.com/usuario" oninput="renderizarCV()">
+                        </div>
+                        <div class="input-group">
+                            <label>GitLab</label>
+                            <input type="text" id="in-gitlab" placeholder="gitlab.com/usuario" oninput="renderizarCV()">
+                        </div>
+                    </div>
+                    <div class="input-group mt-15">
+                        <label>Resumen Profesional</label>
+                        <textarea id="in-resumen" rows="4" placeholder="Data Engineer con experiencia en diseño, desarrollo y optimización de procesos ETL, modelado de datos y análisis de información para la toma de decisiones." oninput="renderizarCV()"></textarea>
+                    </div>
+                </section>
+
+                <section class="form-section" data-index="1" style="display:none;">
+                    <div id="lista-educacion"></div>
+                    <button class="btn-anadir" onclick="agregarEducacion()">+ Añadir Educación</button>
+                </section>
+
+                <section class="form-section" data-index="2" style="display:none;">
+                    <div class="toggle-container">
+                        <span>Sin experiencia</span>
+                        <label class="switch">
+                            <input type="checkbox" id="check-sin-exp" onchange="renderizarCV()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div id="lista-experiencia"></div>
+                    <button class="btn-anadir" onclick="agregarExperiencia()">+ Añadir Experiencia</button>
+                </section>
+
+                <section class="form-section" data-index="3" style="display:none;">
+                    <div class="input-group">
+                        <label>Habilidades Técnicas</label>
+                        <textarea id="in-hab-tec" rows="3" placeholder="Microsoft Office, Gestión de Proyectos, Análisis de Datos, Comunicación Efectiva" oninput="renderizarCV()"></textarea>
+                        <p class="texto-ayuda">Enumera tus habilidades técnicas separadas por comas. Incluye lenguajes de programación, frameworks, herramientas, etc.</p>
+                    </div>
+                    <div class="input-group mt-15">
+                        <label>Idiomas</label>
+                        <input type="text" id="in-idiomas" placeholder="Español (Nativo), Inglés (Avanzado), Portugués (Básico)" oninput="renderizarCV()">
+                    </div>
+                    
+                    <div class="mt-15">
+                        <label class="label-block">Certificaciones y Licencias</label>
+                        <div id="lista-certificaciones"></div>
+                        <button class="btn-outline-add" onclick="agregarCertificacion()">+ Añadir Certificación</button>
+                    </div>
+
+                    <div class="input-group mt-15">
+                        <label>Habilidades Adicionales e Intereses</label>
+                        <textarea id="in-hab-adic" rows="3" placeholder="Liderazgo, Trabajo en Equipo, Resolución de Problemas, Organización" oninput="renderizarCV()"></textarea>
+                    </div>
+                </section>
+            </div>
+
+            <footer class="bottom-nav">
+                <button class="btn-nav-outline" id="btn-anterior" onclick="navegar(-1)" style="visibility: hidden;">Anterior</button>
+                <button class="btn-nav-solid" id="btn-siguiente" onclick="navegar(1)">Siguiente</button>
+            </footer>
+        </aside>
+
+        <main class="preview-area">
+            <div id="cv-hoja" class="cv-documento">
+                <div class="cv-cabecera">
+                    <img id="out-foto" src="" alt="Perfil" style="display:none;">
+                    <h1 id="out-nombre"></h1>
+                    <h2 id="out-titulo"></h2>
+                    <p class="cv-contacto" id="out-contacto"></p>
+                </div>
+                
+                <div class="cv-seccion" id="sec-cv-resumen" style="display:none;">
+                    <p id="out-resumen" class="cv-texto-resumen"></p>
+                </div>
+
+                <div class="cv-seccion" id="sec-cv-edu">
+                    <h3 class="cv-titulo-seccion">EDUCACIÓN</h3>
+                    <hr class="cv-linea">
+                    <div id="out-educacion"></div>
+                </div>
+
+                <div class="cv-seccion" id="sec-cv-exp">
+                    <h3 class="cv-titulo-seccion">EXPERIENCIA</h3>
+                    <hr class="cv-linea">
+                    <div id="out-experiencia"></div>
+                </div>
+
+                <div class="cv-seccion" id="sec-cv-hab">
+                    <h3 class="cv-titulo-seccion">HABILIDADES</h3>
+                    <hr class="cv-linea">
+                    <div id="out-habilidades" class="cv-bloque-habilidades"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
