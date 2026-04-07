@@ -9,7 +9,7 @@ function cambiarPestana(index) {
 
     document.getElementById('btn-anterior').style.visibility = (index === 0) ? 'hidden' : 'visible';
     const btnSiguiente = document.getElementById('btn-siguiente');
-    
+
     if (index === totalPestanas - 1) {
         btnSiguiente.innerText = 'Finalizar';
     } else {
@@ -127,7 +127,7 @@ function renderizarCV() {
     // Info Personal y Contacto
     document.getElementById('out-nombre').innerText = document.getElementById('in-nombre').value;
     document.getElementById('out-titulo').innerText = document.getElementById('in-titulo').value;
-    
+
     let contactoArr = [
         document.getElementById('in-correo').value,
         document.getElementById('in-telefono').value,
@@ -156,8 +156,8 @@ function renderizarCV() {
 
         if(tit || inst) {
             htmlEdu += `<div class="cv-item">
-                <div class="cv-item-header"><span>${tit}</span><span>${fechas}</span></div>
-                <div class="cv-item-sub"><span>${inst}</span><span>${ubi}</span></div>
+                <div class="cv-item-header"><span>${inst}</span><span>${fechas}</span></div>
+                <div class="cv-item-sub"><span>${tit}</span><span>${ubi}</span></div>
                 ${desc ? `<div class="cv-item-desc">${desc}</div>` : ''}
             </div>`;
         }
@@ -175,14 +175,24 @@ function renderizarCV() {
             const ubi = item.querySelector('.i-exp-ubi').value;
             const ini = item.querySelector('.i-exp-ini').value;
             const fin = item.querySelector('.i-exp-fin').value;
-            const desc = item.querySelector('.i-exp-desc').value.replace(/\n/g, '<br>');
+            const rawDesc = item.querySelector('.i-exp-desc').value;
             const fechas = (ini || fin) ? `${ini} ${fin ? '- '+fin : ''}` : '';
+
+            let descHtml = '';
+            if (rawDesc) {
+                const lines = rawDesc.split('\n').filter(l => l.trim() !== "");
+                if (lines.some(l => l.trim().startsWith('•') || l.trim().startsWith('-'))) {
+                    descHtml = '<ul>' + lines.map(l => `<li>${l.trim().replace(/^[•-]\s*/, '')}</li>`).join('') + '</ul>';
+                } else {
+                    descHtml = rawDesc.replace(/\n/g, '<br>');
+                }
+            }
 
             if(cargo || emp) {
                 htmlExp += `<div class="cv-item">
                     <div class="cv-item-header"><span>${cargo}</span><span>${fechas}</span></div>
                     <div class="cv-item-sub"><span>${emp}</span><span>${ubi}</span></div>
-                    ${desc ? `<div class="cv-item-desc">${desc}</div>` : ''}
+                    ${descHtml ? `<div class="cv-item-desc">${descHtml}</div>` : ''}
                 </div>`;
             }
         });
@@ -191,31 +201,55 @@ function renderizarCV() {
     document.getElementById('sec-cv-exp').style.display = (sinExp || htmlExp === '') ? 'none' : 'block';
 
     // Habilidades Agrupadas
-    let htmlHab = '';
     const tec = document.getElementById('in-hab-tec').value;
     const idi = document.getElementById('in-idiomas').value;
     const adic = document.getElementById('in-hab-adic').value;
-    
-    // Recopilar Certificaciones
-    let certsArr = [];
-    document.querySelectorAll('.cert-row').forEach(row => {
-        const nom = row.querySelector('.i-cert-nombre').value;
-        const fec = row.querySelector('.i-cert-fecha').value;
-        if(nom) certsArr.push(`${nom}${fec ? ` (${fec})` : ''}`);
-    });
 
+    let htmlHab = '';
     if (tec) htmlHab += `<div class="cv-hab-linea"><strong>Habilidades Técnicas:</strong> ${tec}</div>`;
     if (idi) htmlHab += `<div class="cv-hab-linea"><strong>Idiomas:</strong> ${idi}</div>`;
-    if (certsArr.length > 0) htmlHab += `<div class="cv-hab-linea"><strong>Certificaciones:</strong> ${certsArr.join(', ')}</div>`;
     if (adic) htmlHab += `<div class="cv-hab-linea"><strong>Habilidades Adicionales:</strong> ${adic}</div>`;
 
     document.getElementById('out-habilidades').innerHTML = htmlHab;
     document.getElementById('sec-cv-hab').style.display = htmlHab === '' ? 'none' : 'block';
+
+    // Recopilar Certificaciones
+    let certsHtml = '';
+    document.querySelectorAll('.cert-row').forEach(row => {
+        const nom = row.querySelector('.i-cert-nombre').value;
+        const fec = row.querySelector('.i-cert-fecha').value;
+        if(nom) {
+            certsHtml += `<div class="cv-item-header"><span>• ${nom}</span><span>${fec}</span></div>`;
+        }
+    });
+
+    document.getElementById('out-certificaciones').innerHTML = certsHtml;
+    document.getElementById('sec-cv-cert').style.display = certsHtml === '' ? 'none' : 'block';
 }
 
 function descargarPDF() {
     const elemento = document.getElementById('cv-hoja');
-    html2pdf().set({ margin: 0, filename: 'Mi_CV.pdf', image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(elemento).save();
+
+    const opt = {
+        margin: 0,
+        filename: 'Mi_CV.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+            scale: 3,
+            useCORS: true,
+            letterRendering: true,
+            scrollY: 0,
+            scrollX: 0,
+            windowWidth: elemento.clientWidth
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    // Usamos el worker para tener más control y evitar páginas en blanco
+    const worker = html2pdf().set(opt).from(elemento).toContainer().toCanvas().toImg().toPdf();
+
+    worker.save().catch(err => console.error("Error al generar PDF:", err));
 }
 
 // Inicialización

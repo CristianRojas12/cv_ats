@@ -81,7 +81,7 @@ input:checked + .slider:before { transform: translateX(20px); background-color: 
 
 /* --- HOJA A4 --- */
 .preview-area { flex: 1; display: flex; justify-content: center; padding: 40px; overflow-y: auto; background: #e2e8f0; }
-.cv-documento { width: 210mm; min-height: 297mm; background: white; color: black; padding: 20mm 25mm; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+.cv-documento { width: 210mm; height: auto; background: white; color: black; padding: 20mm 25mm; box-shadow: none; }
 .cv-cabecera { text-align: center; margin-bottom: 20px; }
 #out-foto { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; margin: 0 auto 15px auto; display: block; }
 #out-nombre { font-family: 'Merriweather', serif; font-size: 22px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; }
@@ -89,15 +89,17 @@ input:checked + .slider:before { transform: translateX(20px); background-color: 
 .cv-contacto { font-size: 11px; color: #555; word-spacing: 2px; font-family: 'Inter'; }
 
 .cv-seccion { margin-bottom: 20px; }
-.cv-titulo-seccion { font-family: 'Merriweather', serif; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
-.cv-linea { border: none; border-top: 1px solid #000; margin: 4px 0 12px 0; }
+.cv-titulo-seccion { font-family: 'Merriweather', serif; font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.cv-linea { border: none; border-top: 1px solid #ccc; margin: 4px 0 12px 0; }
 
 .cv-texto-resumen { font-size: 12px; line-height: 1.5; color: #222; font-family: 'Inter'; text-align: justify; margin-bottom: 10px;}
 
 .cv-item { margin-bottom: 12px; font-size: 12px; font-family: 'Inter';}
-.cv-item-header { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 2px;}
-.cv-item-sub { display: flex; justify-content: space-between; font-style: italic; color: #444; margin-bottom: 4px;}
+.cv-item-header { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 2px;}
+.cv-item-sub { display: flex; justify-content: space-between; font-style: italic; color: #000; margin-bottom: 4px;}
 .cv-item-desc { line-height: 1.5; text-align: justify; color: #222;}
+.cv-item-desc ul { padding-left: 15px; margin-top: 5px; list-style-type: disc; }
+.cv-item-desc li { margin-bottom: 3px; }
 
 /* Bloque Habilidades en CV */
 .cv-bloque-habilidades { font-family: 'Inter'; font-size: 12px; line-height: 1.6; color: #222;}
