@@ -18,6 +18,7 @@
                         <button class="btn-primary-small" onclick="descargarPDF()">Descargar PDF</button>
                     </div>
                 </div>
+            </header>
 
             <nav class="tabs">
                 <button class="tab active" onclick="cambiarPestana(0)">Personal</button>
@@ -112,7 +113,7 @@
                         <label>Idiomas</label>
                         <input type="text" id="in-idiomas" placeholder="Español (Nativo), Inglés (Avanzado), Portugués (Básico)" oninput="renderizarCV()">
                     </div>
-                    
+
                     <div class="mt-15">
                         <label class="label-block">Certificaciones y Licencias</label>
                         <div id="lista-certificaciones"></div>
@@ -140,8 +141,10 @@
                     <h2 id="out-titulo"></h2>
                     <p class="cv-contacto" id="out-contacto"></p>
                 </div>
-                
+
                 <div class="cv-seccion" id="sec-cv-resumen" style="display:none;">
+                    <h3 class="cv-titulo-seccion">RESUMEN</h3>
+                    <hr class="cv-linea">
                     <p id="out-resumen" class="cv-texto-resumen"></p>
                 </div>
 
@@ -161,6 +164,12 @@
                     <h3 class="cv-titulo-seccion">HABILIDADES</h3>
                     <hr class="cv-linea">
                     <div id="out-habilidades" class="cv-bloque-habilidades"></div>
+                </div>
+
+                <div class="cv-seccion" id="sec-cv-cert" style="display:none;">
+                    <h3 class="cv-titulo-seccion">CERTIFICACIONES</h3>
+                    <hr class="cv-linea">
+                    <div id="out-certificaciones" class="cv-bloque-habilidades"></div>
                 </div>
             </div>
         </main>
