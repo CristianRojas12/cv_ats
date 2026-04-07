@@ -105,3 +105,5 @@ input:checked + .slider:before { transform: translateX(20px); background-color: 
 .cv-bloque-habilidades { font-family: 'Inter'; font-size: 12px; line-height: 1.6; color: #222;}
 .cv-hab-linea { margin-bottom: 6px; }
 .cv-hab-linea strong { font-weight: 600; color: #000; }
+
+.cv-cert-item { display: flex; justify-content: space-between; font-weight: 400; margin-bottom: 4px; }

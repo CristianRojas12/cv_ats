@@ -219,7 +219,7 @@ function renderizarCV() {
         const nom = row.querySelector('.i-cert-nombre').value;
         const fec = row.querySelector('.i-cert-fecha').value;
         if(nom) {
-            certsHtml += `<div class="cv-item-header"><span>• ${nom}</span><span>${fec}</span></div>`;
+            certsHtml += `<div class="cv-cert-item"><span>• ${nom}</span><span>${fec}</span></div>`;
         }
     });
 
