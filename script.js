@@ -230,26 +230,66 @@ function renderizarCV() {
 function descargarPDF() {
     const elemento = document.getElementById('cv-hoja');
 
-    const opt = {
-        margin: 0,
-        filename: 'Mi_CV.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-            scale: 3,
-            useCORS: true,
-            letterRendering: true,
-            scrollY: 0,
-            scrollX: 0,
-            windowWidth: elemento.clientWidth
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    // Guardar estilos originales para restaurarlos
+    const originalBoxShadow = elemento.style.boxShadow;
+    const originalHeight = elemento.style.height;
+
+    // Preparar elemento para captura
+    elemento.style.boxShadow = 'none';
+    elemento.style.height = 'auto';
+
+    const options = {
+        scale: 3,
+        useCORS: true,
+        letterRendering: true,
+        backgroundColor: "#ffffff",
+        windowWidth: elemento.clientWidth
     };
 
-    // Usamos el worker para tener más control y evitar páginas en blanco
-    const worker = html2pdf().set(opt).from(elemento).toContainer().toCanvas().toImg().toPdf();
+    html2canvas(elemento, options).then(canvas => {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
 
-    worker.save().catch(err => console.error("Error al generar PDF:", err));
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+
+        // Calcular dimensiones para que quepa en una sola página A4
+        // Usamos el ancho del PDF como base y escalamos el alto proporcionalmente
+        const ratio = pdfWidth / canvas.width;
+        const w = pdfWidth;
+        const h = canvas.height * ratio;
+
+        // Si el contenido escalado al ancho aún supera el alto de la hoja,
+        // re-escalamos basándonos en el alto para que entre todo.
+        let finalW = w;
+        let finalH = h;
+        let x = 0;
+
+        if (h > pdfHeight) {
+            const ratioH = pdfHeight / canvas.height;
+            finalH = pdfHeight;
+            finalW = canvas.width * ratioH;
+            x = (pdfWidth - finalW) / 2; // Centrar horizontalmente
+        }
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        pdf.addImage(imgData, 'JPEG', x, 0, finalW, finalH);
+
+        pdf.save('Mi_CV.pdf');
+
+        // Restaurar estilos
+        elemento.style.boxShadow = originalBoxShadow;
+        elemento.style.height = originalHeight;
+        console.log("PDF generado y estilos restaurados");
+    }).catch(err => {
+        console.error("Error al generar PDF:", err);
+        elemento.style.boxShadow = originalBoxShadow;
+        elemento.style.height = originalHeight;
+    });
 }
 
 // Inicialización
