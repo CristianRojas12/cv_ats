@@ -1,7 +1,0 @@
-node_modules/
-package-lock.json
-package.json
-repro_preview.png
-repro.js
-check_globals.js
-output.txt
