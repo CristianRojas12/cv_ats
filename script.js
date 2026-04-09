@@ -233,17 +233,23 @@ function descargarPDF() {
     // Guardar estilos originales para restaurarlos
     const originalBoxShadow = elemento.style.boxShadow;
     const originalHeight = elemento.style.height;
+    const originalWidth = elemento.style.width;
 
-    // Preparar elemento para captura
-    elemento.style.boxShadow = 'none';
+    // Forzar ancho fijo y alto automático para que la captura sea consistente
+    // 210mm a 96dpi es aprox 794px
+    elemento.style.width = '210mm';
     elemento.style.height = 'auto';
+    elemento.style.boxShadow = 'none';
 
+    // Aumentamos escala para mayor nitidez
     const options = {
-        scale: 3,
+        scale: 4,
         useCORS: true,
         letterRendering: true,
         backgroundColor: "#ffffff",
-        windowWidth: elemento.clientWidth
+        logging: false,
+        // Aseguramos que el ancho de ventana de captura coincida con el elemento
+        windowWidth: 794
     };
 
     html2canvas(elemento, options).then(canvas => {
@@ -257,38 +263,39 @@ function descargarPDF() {
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
 
-        // Calcular dimensiones para que quepa en una sola página A4
-        // Usamos el ancho del PDF como base y escalamos el alto proporcionalmente
+        // El canvas representa el contenido renderizado.
+        // Calculamos el ratio para que el ancho del canvas ocupe exactamente el ancho A4 (210mm)
         const ratio = pdfWidth / canvas.width;
         const w = pdfWidth;
         const h = canvas.height * ratio;
 
-        // Si el contenido escalado al ancho aún supera el alto de la hoja,
-        // re-escalamos basándonos en el alto para que entre todo.
         let finalW = w;
         let finalH = h;
         let x = 0;
+        let y = 0;
 
+        // Si el contenido excede el alto de una página A4, escalamos proporcionalmente para que entre todo
         if (h > pdfHeight) {
-            const ratioH = pdfHeight / canvas.height;
+            const scaleFactor = pdfHeight / h;
             finalH = pdfHeight;
-            finalW = canvas.width * ratioH;
-            x = (pdfWidth - finalW) / 2; // Centrar horizontalmente
+            finalW = w * scaleFactor;
+            x = (pdfWidth - finalW) / 2; // Centramos si sobra espacio a los lados
         }
 
-        const imgData = canvas.toDataURL('image/jpeg', 0.95);
-        pdf.addImage(imgData, 'JPEG', x, 0, finalW, finalH);
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        pdf.addImage(imgData, 'JPEG', x, y, finalW, finalH);
 
         pdf.save('Mi_CV.pdf');
 
-        // Restaurar estilos
+        // Restaurar estilos visuales
         elemento.style.boxShadow = originalBoxShadow;
         elemento.style.height = originalHeight;
-        console.log("PDF generado y estilos restaurados");
+        elemento.style.width = originalWidth;
     }).catch(err => {
         console.error("Error al generar PDF:", err);
         elemento.style.boxShadow = originalBoxShadow;
         elemento.style.height = originalHeight;
+        elemento.style.width = originalWidth;
     });
 }
 
