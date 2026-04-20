@@ -234,22 +234,22 @@ function descargarPDF() {
     const originalBoxShadow = elemento.style.boxShadow;
     const originalHeight = elemento.style.height;
     const originalWidth = elemento.style.width;
-
+    
     // Forzar ancho fijo y alto automático para que la captura sea consistente
     // 210mm a 96dpi es aprox 794px
-    elemento.style.width = '210mm';
+    elemento.style.width = '210mm'; 
     elemento.style.height = 'auto';
     elemento.style.boxShadow = 'none';
 
     // Aumentamos escala para mayor nitidez
     const options = {
-        scale: 4,
+        scale: 4, 
         useCORS: true,
         letterRendering: true,
         backgroundColor: "#ffffff",
         logging: false,
         // Aseguramos que el ancho de ventana de captura coincida con el elemento
-        windowWidth: 794
+        windowWidth: 794 
     };
 
     html2canvas(elemento, options).then(canvas => {
@@ -262,13 +262,13 @@ function descargarPDF() {
 
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
-
+        
         // El canvas representa el contenido renderizado.
         // Calculamos el ratio para que el ancho del canvas ocupe exactamente el ancho A4 (210mm)
         const ratio = pdfWidth / canvas.width;
         const w = pdfWidth;
         const h = canvas.height * ratio;
-
+        
         let finalW = w;
         let finalH = h;
         let x = 0;
@@ -284,7 +284,7 @@ function descargarPDF() {
 
         const imgData = canvas.toDataURL('image/jpeg', 1.0);
         pdf.addImage(imgData, 'JPEG', x, y, finalW, finalH);
-
+        
         pdf.save('Mi_CV.pdf');
 
         // Restaurar estilos visuales
