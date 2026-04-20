@@ -234,72 +234,77 @@ function renderizarCV() {
 function descargarPDF() {
     const elemento = document.getElementById('cv-hoja');
 
-    // Guardar estilos originales para restaurarlos
-    const originalBoxShadow = elemento.style.boxShadow;
-    const originalHeight = elemento.style.height;
-    const originalWidth = elemento.style.width;
-    
-    // Forzar ancho fijo y alto automático para que la captura sea consistente
-    // 210mm a 96dpi es aprox 794px
-    elemento.style.width = '210mm'; 
-    elemento.style.height = 'auto';
-    elemento.style.boxShadow = 'none';
-
-    // Aumentamos escala para mayor nitidez
-    const options = {
-        scale: 4, 
-        useCORS: true,
-        letterRendering: true,
-        backgroundColor: "#ffffff",
-        logging: false,
-        // Aseguramos que el ancho de ventana de captura coincida con el elemento
-        windowWidth: 794 
-    };
-
-    html2canvas(elemento, options).then(canvas => {
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4'
-        });
-
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        
-        // El canvas representa el contenido renderizado.
-        // Calculamos el ratio para que el ancho del canvas ocupe exactamente el ancho A4 (210mm)
-        const ratio = pdfWidth / canvas.width;
-        const w = pdfWidth;
-        const h = canvas.height * ratio;
-        
-        let finalW = w;
-        let finalH = h;
-        let x = 0;
-        let y = 0;
-
-        // Si el contenido excede el alto de una página A4, escalamos proporcionalmente para que entre todo
-        if (h > pdfHeight) {
-            const scaleFactor = pdfHeight / h;
-            finalH = pdfHeight;
-            finalW = w * scaleFactor;
-            x = (pdfWidth - finalW) / 2; // Centramos si sobra espacio a los lados
+    const esperarRecursos = async () => {
+        if (document.fonts && document.fonts.ready) {
+            await document.fonts.ready;
         }
 
-        const imgData = canvas.toDataURL('image/jpeg', 1.0);
-        pdf.addImage(imgData, 'JPEG', x, y, finalW, finalH);
-        
-        pdf.save('Mi_CV.pdf');
+        const imagenes = Array.from(elemento.querySelectorAll('img')).filter(img => img.src);
+        await Promise.all(imagenes.map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise(resolve => {
+                img.onload = resolve;
+                img.onerror = resolve;
+            });
+        }));
+    };
 
-        // Restaurar estilos visuales
-        elemento.style.boxShadow = originalBoxShadow;
-        elemento.style.height = originalHeight;
-        elemento.style.width = originalWidth;
-    }).catch(err => {
+    const capturarYDescargar = async () => {
+        await esperarRecursos();
+
+        // Clonamos el CV fuera de la vista para evitar capturas vacías por estilos/scroll del layout principal.
+        const clon = elemento.cloneNode(true);
+        clon.style.position = 'fixed';
+        clon.style.left = '-99999px';
+        clon.style.top = '0';
+        clon.style.width = '794px'; // Ancho A4 aproximado en pantalla.
+        clon.style.minHeight = 'auto';
+        clon.style.height = 'auto';
+        clon.style.margin = '0';
+        clon.style.boxShadow = 'none';
+        clon.style.background = '#fff';
+        clon.style.zIndex = '-1';
+        document.body.appendChild(clon);
+
+        try {
+            const canvas = await html2canvas(clon, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                logging: false,
+                scrollX: 0,
+                scrollY: 0,
+                width: clon.scrollWidth,
+                height: clon.scrollHeight,
+                windowWidth: clon.scrollWidth,
+                windowHeight: clon.scrollHeight
+            });
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+            const ratio = Math.min(pdfWidth / canvas.width, pdfHeight / canvas.height);
+            const finalW = canvas.width * ratio;
+            const finalH = canvas.height * ratio;
+            const x = (pdfWidth - finalW) / 2;
+            const y = 0;
+
+            const imgData = canvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', x, y, finalW, finalH);
+            pdf.save('Mi_CV.pdf');
+        } finally {
+            clon.remove();
+        }
+    };
+
+    capturarYDescargar().catch(err => {
         console.error("Error al generar PDF:", err);
-        elemento.style.boxShadow = originalBoxShadow;
-        elemento.style.height = originalHeight;
-        elemento.style.width = originalWidth;
     });
 }
 
