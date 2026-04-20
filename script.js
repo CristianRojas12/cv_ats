@@ -1,10 +1,6 @@
 let pestanaActual = 0;
 const totalPestanas = 4;
 
-function insertarSaltosSuaves(texto) {
-    return (texto || '').replace(/(\S{18})(?=\S)/g, '$1\u200B');
-}
-
 // 1. SISTEMA DE NAVEGACIÓN
 function cambiarPestana(index) {
     pestanaActual = index;
@@ -139,23 +135,23 @@ function renderizarCV() {
         document.getElementById('in-linkedin').value,
         document.getElementById('in-github').value,
         document.getElementById('in-gitlab').value
-    ].filter(item => item.trim() !== "").map(insertarSaltosSuaves);
-    document.getElementById('out-contacto').innerHTML = contactoArr.join(" &nbsp;|&nbsp; ");
+    ].filter(item => item.trim() !== "")
+    document.getElementById('out-contacto').innerHTML = contactoArr.join(" &#8226; ");
 
     // Resumen Profesional
     const resumen = document.getElementById('in-resumen').value;
-    document.getElementById('out-resumen').innerText = insertarSaltosSuaves(resumen);
+    document.getElementById('out-resumen').innerText = resumen;
     document.getElementById('sec-cv-resumen').style.display = resumen ? 'block' : 'none';
 
     // Educación
     let htmlEdu = '';
     document.querySelectorAll('.bloque-edu').forEach(item => {
-        const inst = insertarSaltosSuaves(item.querySelector('.i-edu-inst').value);
-        const tit = insertarSaltosSuaves(item.querySelector('.i-edu-tit').value);
-        const ubi = insertarSaltosSuaves(item.querySelector('.i-edu-ubi').value);
-        const ini = insertarSaltosSuaves(item.querySelector('.i-edu-ini').value);
-        const fin = insertarSaltosSuaves(item.querySelector('.i-edu-fin').value);
-        const desc = insertarSaltosSuaves(item.querySelector('.i-edu-desc').value).replace(/\n/g, '<br>');
+        const inst = item.querySelector('.i-edu-inst').value;
+        const tit = item.querySelector('.i-edu-tit').value;
+        const ubi = item.querySelector('.i-edu-ubi').value;
+        const ini = item.querySelector('.i-edu-ini').value;
+        const fin = item.querySelector('.i-edu-fin').value;
+        const desc = item.querySelector('.i-edu-desc').value.replace(/\n/g, '<br>');
         const fechas = (ini || fin) ? `${ini} ${fin ? '- '+fin : ''}` : '';
 
         if(tit || inst) {
@@ -174,11 +170,11 @@ function renderizarCV() {
     let htmlExp = '';
     if (!sinExp) {
         document.querySelectorAll('.bloque-exp').forEach(item => {
-            const emp = insertarSaltosSuaves(item.querySelector('.i-exp-emp').value);
-            const cargo = insertarSaltosSuaves(item.querySelector('.i-exp-cargo').value);
-            const ubi = insertarSaltosSuaves(item.querySelector('.i-exp-ubi').value);
-            const ini = insertarSaltosSuaves(item.querySelector('.i-exp-ini').value);
-            const fin = insertarSaltosSuaves(item.querySelector('.i-exp-fin').value);
+            const emp = item.querySelector('.i-exp-emp').value;
+            const cargo = item.querySelector('.i-exp-cargo').value;
+            const ubi = item.querySelector('.i-exp-ubi').value;
+            const ini = item.querySelector('.i-exp-ini').value;
+            const fin = item.querySelector('.i-exp-fin').value;
             const rawDesc = item.querySelector('.i-exp-desc').value;
             const fechas = (ini || fin) ? `${ini} ${fin ? '- '+fin : ''}` : '';
 
@@ -186,9 +182,9 @@ function renderizarCV() {
             if (rawDesc) {
                 const lines = rawDesc.split('\n').filter(l => l.trim() !== "");
                 if (lines.some(l => l.trim().startsWith('•') || l.trim().startsWith('-'))) {
-                    descHtml = '<ul>' + lines.map(l => `<li>${insertarSaltosSuaves(l.trim().replace(/^[•-]\s*/, ''))}</li>`).join('') + '</ul>';
+                    descHtml = '<ul>' + lines.map(l => `<li>${l.trim().replace(/^[•-]\s*/, '')}</li>`).join('') + '</ul>';
                 } else {
-                    descHtml = insertarSaltosSuaves(rawDesc).replace(/\n/g, '<br>');
+                    descHtml = rawDesc.replace(/\n/g, '<br>');
                 }
             }
 
@@ -205,9 +201,9 @@ function renderizarCV() {
     document.getElementById('sec-cv-exp').style.display = (sinExp || htmlExp === '') ? 'none' : 'block';
 
     // Habilidades Agrupadas
-    const tec = insertarSaltosSuaves(document.getElementById('in-hab-tec').value);
-    const idi = insertarSaltosSuaves(document.getElementById('in-idiomas').value);
-    const adic = insertarSaltosSuaves(document.getElementById('in-hab-adic').value);
+    const tec = document.getElementById('in-hab-tec').value;
+    const idi = document.getElementById('in-idiomas').value;
+    const adic = document.getElementById('in-hab-adic').value;
 
     let htmlHab = '';
     if (tec) htmlHab += `<div class="cv-hab-linea"><strong>Habilidades Técnicas:</strong> ${tec}</div>`;
@@ -220,8 +216,8 @@ function renderizarCV() {
     // Recopilar Certificaciones
     let certsHtml = '';
     document.querySelectorAll('.cert-row').forEach(row => {
-        const nom = insertarSaltosSuaves(row.querySelector('.i-cert-nombre').value);
-        const fec = insertarSaltosSuaves(row.querySelector('.i-cert-fecha').value);
+        const nom = row.querySelector('.i-cert-nombre').value;
+        const fec = row.querySelector('.i-cert-fecha').value;
         if(nom) {
             certsHtml += `<div class="cv-item-header"><span>• ${nom}</span><span>${fec}</span></div>`;
         }
@@ -254,6 +250,9 @@ function descargarPDF() {
 
         // Clonamos el CV fuera de la vista para evitar capturas vacías por estilos/scroll del layout principal.
         const clon = elemento.cloneNode(true);
+        const styleBlock = document.createElement('style');
+        styleBlock.innerHTML = '* { letter-spacing: normal !important; }';
+        clon.appendChild(styleBlock);
         clon.style.position = 'fixed';
         clon.style.left = '-99999px';
         clon.style.top = '0';
