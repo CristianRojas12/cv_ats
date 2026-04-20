@@ -1,6 +1,10 @@
 let pestanaActual = 0;
 const totalPestanas = 4;
 
+function insertarSaltosSuaves(texto) {
+    return (texto || '').replace(/(\S{18})(?=\S)/g, '$1\u200B');
+}
+
 // 1. SISTEMA DE NAVEGACIÓN
 function cambiarPestana(index) {
     pestanaActual = index;
@@ -135,23 +139,23 @@ function renderizarCV() {
         document.getElementById('in-linkedin').value,
         document.getElementById('in-github').value,
         document.getElementById('in-gitlab').value
-    ].filter(item => item.trim() !== "");
-    document.getElementById('out-contacto').innerHTML = contactoArr.join(" &nbsp;•&nbsp; ");
+    ].filter(item => item.trim() !== "").map(insertarSaltosSuaves);
+    document.getElementById('out-contacto').innerHTML = contactoArr.join(" &nbsp;|&nbsp; ");
 
     // Resumen Profesional
     const resumen = document.getElementById('in-resumen').value;
-    document.getElementById('out-resumen').innerText = resumen;
+    document.getElementById('out-resumen').innerText = insertarSaltosSuaves(resumen);
     document.getElementById('sec-cv-resumen').style.display = resumen ? 'block' : 'none';
 
     // Educación
     let htmlEdu = '';
     document.querySelectorAll('.bloque-edu').forEach(item => {
-        const inst = item.querySelector('.i-edu-inst').value;
-        const tit = item.querySelector('.i-edu-tit').value;
-        const ubi = item.querySelector('.i-edu-ubi').value;
-        const ini = item.querySelector('.i-edu-ini').value;
-        const fin = item.querySelector('.i-edu-fin').value;
-        const desc = item.querySelector('.i-edu-desc').value.replace(/\n/g, '<br>');
+        const inst = insertarSaltosSuaves(item.querySelector('.i-edu-inst').value);
+        const tit = insertarSaltosSuaves(item.querySelector('.i-edu-tit').value);
+        const ubi = insertarSaltosSuaves(item.querySelector('.i-edu-ubi').value);
+        const ini = insertarSaltosSuaves(item.querySelector('.i-edu-ini').value);
+        const fin = insertarSaltosSuaves(item.querySelector('.i-edu-fin').value);
+        const desc = insertarSaltosSuaves(item.querySelector('.i-edu-desc').value).replace(/\n/g, '<br>');
         const fechas = (ini || fin) ? `${ini} ${fin ? '- '+fin : ''}` : '';
 
         if(tit || inst) {
@@ -170,11 +174,11 @@ function renderizarCV() {
     let htmlExp = '';
     if (!sinExp) {
         document.querySelectorAll('.bloque-exp').forEach(item => {
-            const emp = item.querySelector('.i-exp-emp').value;
-            const cargo = item.querySelector('.i-exp-cargo').value;
-            const ubi = item.querySelector('.i-exp-ubi').value;
-            const ini = item.querySelector('.i-exp-ini').value;
-            const fin = item.querySelector('.i-exp-fin').value;
+            const emp = insertarSaltosSuaves(item.querySelector('.i-exp-emp').value);
+            const cargo = insertarSaltosSuaves(item.querySelector('.i-exp-cargo').value);
+            const ubi = insertarSaltosSuaves(item.querySelector('.i-exp-ubi').value);
+            const ini = insertarSaltosSuaves(item.querySelector('.i-exp-ini').value);
+            const fin = insertarSaltosSuaves(item.querySelector('.i-exp-fin').value);
             const rawDesc = item.querySelector('.i-exp-desc').value;
             const fechas = (ini || fin) ? `${ini} ${fin ? '- '+fin : ''}` : '';
 
@@ -182,9 +186,9 @@ function renderizarCV() {
             if (rawDesc) {
                 const lines = rawDesc.split('\n').filter(l => l.trim() !== "");
                 if (lines.some(l => l.trim().startsWith('•') || l.trim().startsWith('-'))) {
-                    descHtml = '<ul>' + lines.map(l => `<li>${l.trim().replace(/^[•-]\s*/, '')}</li>`).join('') + '</ul>';
+                    descHtml = '<ul>' + lines.map(l => `<li>${insertarSaltosSuaves(l.trim().replace(/^[•-]\s*/, ''))}</li>`).join('') + '</ul>';
                 } else {
-                    descHtml = rawDesc.replace(/\n/g, '<br>');
+                    descHtml = insertarSaltosSuaves(rawDesc).replace(/\n/g, '<br>');
                 }
             }
 
@@ -201,9 +205,9 @@ function renderizarCV() {
     document.getElementById('sec-cv-exp').style.display = (sinExp || htmlExp === '') ? 'none' : 'block';
 
     // Habilidades Agrupadas
-    const tec = document.getElementById('in-hab-tec').value;
-    const idi = document.getElementById('in-idiomas').value;
-    const adic = document.getElementById('in-hab-adic').value;
+    const tec = insertarSaltosSuaves(document.getElementById('in-hab-tec').value);
+    const idi = insertarSaltosSuaves(document.getElementById('in-idiomas').value);
+    const adic = insertarSaltosSuaves(document.getElementById('in-hab-adic').value);
 
     let htmlHab = '';
     if (tec) htmlHab += `<div class="cv-hab-linea"><strong>Habilidades Técnicas:</strong> ${tec}</div>`;
@@ -216,8 +220,8 @@ function renderizarCV() {
     // Recopilar Certificaciones
     let certsHtml = '';
     document.querySelectorAll('.cert-row').forEach(row => {
-        const nom = row.querySelector('.i-cert-nombre').value;
-        const fec = row.querySelector('.i-cert-fecha').value;
+        const nom = insertarSaltosSuaves(row.querySelector('.i-cert-nombre').value);
+        const fec = insertarSaltosSuaves(row.querySelector('.i-cert-fecha').value);
         if(nom) {
             certsHtml += `<div class="cv-item-header"><span>• ${nom}</span><span>${fec}</span></div>`;
         }
@@ -250,24 +254,16 @@ function descargarPDF() {
 
         // Clonamos el CV fuera de la vista para evitar capturas vacías por estilos/scroll del layout principal.
         const clon = elemento.cloneNode(true);
-        const anchoClone = Math.ceil(elemento.getBoundingClientRect().width) || 794;
         clon.style.position = 'fixed';
         clon.style.left = '-99999px';
         clon.style.top = '0';
-        clon.style.width = `${anchoClone}px`;
+        clon.style.width = '794px'; // Ancho A4 aproximado en pantalla.
         clon.style.minHeight = 'auto';
         clon.style.height = 'auto';
         clon.style.margin = '0';
         clon.style.boxShadow = 'none';
         clon.style.background = '#fff';
         clon.style.zIndex = '-1';
-        clon.style.letterSpacing = '0px';
-        clon.style.fontKerning = 'normal';
-        clon.querySelectorAll('*').forEach(node => {
-            node.style.letterSpacing = '0px';
-            node.style.fontKerning = 'normal';
-            node.style.textRendering = 'optimizeLegibility';
-        });
         document.body.appendChild(clon);
 
         try {
@@ -293,23 +289,14 @@ function descargarPDF() {
 
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
+            const ratio = Math.min(pdfWidth / canvas.width, pdfHeight / canvas.height);
+            const finalW = canvas.width * ratio;
+            const finalH = canvas.height * ratio;
+            const x = (pdfWidth - finalW) / 2;
+            const y = 0;
+
             const imgData = canvas.toDataURL('image/png');
-            const imgWidth = pdfWidth;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-            let renderedHeight = imgHeight;
-            let positionY = 0;
-
-            pdf.addImage(imgData, 'PNG', 0, positionY, imgWidth, imgHeight);
-            renderedHeight -= pdfHeight;
-
-            while (renderedHeight > 0) {
-                positionY -= pdfHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, 'PNG', 0, positionY, imgWidth, imgHeight);
-                renderedHeight -= pdfHeight;
-            }
-
+            pdf.addImage(imgData, 'PNG', x, y, finalW, finalH);
             pdf.save('Mi_CV.pdf');
         } finally {
             clon.remove();

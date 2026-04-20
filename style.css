@@ -81,7 +81,7 @@ input:checked + .slider:before { transform: translateX(20px); background-color: 
 
 /* --- HOJA A4 --- */
 .preview-area { flex: 1; display: flex; justify-content: center; align-items: flex-start; padding: 40px; overflow: auto; background: #e2e8f0; }
-.cv-documento { width: 210mm; min-height: 297mm; background: white; color: black; padding: 15mm; box-shadow: 0 0 20px rgba(0,0,0,0.15); margin-bottom: 40px; flex-shrink: 0; font-family: 'Times New Roman', Times, serif; line-height: 1.35; letter-spacing: normal; }
+.cv-documento { width: 210mm; min-height: 297mm; background: white; color: black; padding: 24mm 30mm; box-shadow: 0 0 20px rgba(0,0,0,0.15); margin-bottom: 40px; flex-shrink: 0; font-family: 'Times New Roman', Times, serif; line-height: 1.3; }
 .cv-documento,
 .cv-documento * {
     max-width: 100%;
@@ -89,14 +89,14 @@ input:checked + .slider:before { transform: translateX(20px); background-color: 
 .cv-cabecera { text-align: center; margin-bottom: 20px; }
 #out-foto { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; margin: 0 auto 15px auto; display: block; }
 #out-nombre { font-family: 'Merriweather', serif; font-size: 22px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; }
-#out-titulo { font-size: 14px; font-weight: 500; color: #333; margin-bottom: 8px; font-family: Arial, Helvetica, sans-serif;}
-.cv-contacto { font-size: 11px; color: #111; white-space: normal; overflow-wrap: break-word; word-break: break-word; line-break: anywhere; font-family: 'Times New Roman', Times, serif; }
+#out-titulo { font-size: 14px; font-weight: 500; color: #333; margin-bottom: 8px; font-family: 'Times New Roman', Times, serif;}
+.cv-contacto { font-size: 11px; color: #555; word-spacing: 1px; white-space: normal; overflow-wrap: anywhere; word-break: break-all; }
 
 .cv-seccion { margin-bottom: 20px; }
 .cv-titulo-seccion { font-family: 'Merriweather', serif; font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 .cv-linea { border: none; border-top: 1px solid #ccc; margin: 4px 0 12px 0; }
 
-.cv-texto-resumen { font-size: 12px; line-height: 1.45; color: #111; text-align: left; margin-bottom: 10px; white-space: pre-wrap; overflow-wrap: break-word; word-break: break-word; line-break: anywhere;}
+.cv-texto-resumen { font-size: 12px; line-height: 1.45; color: #222; text-align: justify; margin-bottom: 10px; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-all;}
 
 .cv-item { margin-bottom: 12px; font-size: 12px;}
 .cv-item-header { display: flex; justify-content: space-between; gap: 12px; font-weight: 700; margin-bottom: 2px;}
@@ -106,19 +106,18 @@ input:checked + .slider:before { transform: translateX(20px); background-color: 
     min-width: 0;
     white-space: normal;
     overflow-wrap: anywhere;
-    word-break: break-word;
-    line-break: anywhere;
+    word-break: break-all;
 }
 .cv-item-header span:last-child,
 .cv-item-sub span:last-child {
     text-align: right;
 }
-.cv-item-desc { line-height: 1.45; text-align: left; color: #111; white-space: pre-wrap; overflow-wrap: break-word; word-break: break-word; line-break: anywhere;}
+.cv-item-desc { line-height: 1.45; text-align: justify; color: #222; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-all;}
 .cv-item-desc ul { padding-left: 15px; margin-top: 5px; list-style-type: disc; }
 .cv-item-desc li { margin-bottom: 3px; }
 
 /* Bloque Habilidades en CV */
-.cv-bloque-habilidades { font-size: 12px; line-height: 1.45; color: #111; white-space: pre-wrap; overflow-wrap: break-word; word-break: break-word; line-break: anywhere;}
+.cv-bloque-habilidades { font-size: 12px; line-height: 1.45; color: #222; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-all;}
 .cv-hab-linea { margin-bottom: 6px; }
 .cv-hab-linea strong { font-weight: 600; color: #000; }
 
